@@ -1,0 +1,96 @@
+{
+    "result": {
+      "result": {
+        "has_keytab": true,
+        "cn": [
+          "FreeIPA Test"
+        ],
+        "krbcanonicalname": [
+          "username@EXAMPLE.COM"
+        ],
+        "memberof_group": [
+          "ipausers"
+        ],
+        "has_password": true,
+        "homedirectory": [
+          "/home/example.com/username"
+        ],
+        "uid": [
+          "username"
+        ],
+        "loginshell": [
+          "/bin/bash"
+        ],
+        "uidnumber": [
+          "866001000"
+        ],
+        "krbextradata": [
+          {
+            "__base64__": "AAJ/ZHJvb3QvYWRtaW5ARVhBTVBMRS5DT00A"
+          }
+        ],
+        "mail": [
+          "username@example.com"
+        ],
+        "dn": "uid=username,cn=users,cn=accounts,dc=example,dc=com",
+        "displayname": [
+          "FreeIPA Test"
+        ],
+        "mepmanagedentry": [
+          "cn=username,cn=groups,cn=accounts,dc=example,dc=com"
+        ],
+        "ipauniqueid": [
+          "e8b12c28-3744-11ee-ad07-141877671fe2"
+        ],
+        "krbprincipalname": [
+          "username@EXAMPLE.COM"
+        ],
+        "givenname": [
+          "FreeIPA"
+        ],
+        "krbpasswordexpiration": [
+          {
+            "__datetime__": "20230810061238Z"
+          }
+        ],
+        "objectclass": [
+          "top",
+          "person",
+          "organizationalperson",
+          "inetorgperson",
+          "inetuser",
+          "posixaccount",
+          "krbprincipalaux",
+          "krbticketpolicyaux",
+          "ipaobject",
+          "ipasshuser",
+          "nexcessuser",
+          "ipaSshGroupOfPubKeys",
+          "mepOriginEntry"
+        ],
+        "gidnumber": [
+          "866001000"
+        ],
+        "gecos": [
+          "FreeIPA Test"
+        ],
+        "sn": [
+          "Heath"
+        ],
+        "krblastpwdchange": [
+          {
+            "__datetime__": "20230810061238Z"
+          }
+        ],
+        "initials": [
+          "FH"
+        ]
+      },
+      "value": "username",
+      "summary": "Added user \"username\""
+    },
+    "version": "4.6.8",
+    "error": null,
+    "id": null,
+    "principal": "admin@EXAMPLE.COM"
+  }

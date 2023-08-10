@@ -1,0 +1,30 @@
+{
+    "result": {
+      "count": 2,
+      "truncated": false,
+      "result": [
+        {
+          "dn": "uid=admin,cn=users,cn=accounts,dc=example,dc=com",
+          "uid": [
+            "admin"
+          ]
+        },
+        {
+          "dn": "uid=johnny.bravo,cn=users,cn=accounts,dc=example,dc=com",
+          "ipasshpubkey": [
+            {
+              "__base64__": "c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCZ1FDbTAwQ2sxc2l3eFY1N3lDb3R3V0VRd2lpbjhHK2tmeU9hWWkwUEtqQUgzNzN2VnJsY09qVEJCaEZTV2w4QUdlWmlqMXc3aEhka1VYTTZNbXdWVzVLQmJ4N3lGeFBmcU1lRjNsWVh1WlFpdW52VHlIZlRRK3lqVnVwOVNtVHJBT1NCWklsOHpUOFlXQmZPVVJwN2pPdDRPMUdPNW50VTRRTFVQTlUzdFdWdDFPUmZ6K3NEWVpmVGZ0bFpHbzc3RVJTdm9vd0t3ekFmTmd1SktMb2tJWm84bXJySm5SYlVJdDFIVGgxTU8wTk1yU2I1Rk1wd2JCMXdWNERINVdwMFJSR1BJV2VheE5SL2dtV2tNSURTYWpFZDZUTXpidThMZ2hqa0FDWWtYSThUZmNUMWl1Rlh4OGh0YWRuT2Jwc0pYTUNPYk5td0RRa2xwQ3NHSXVkZWpGQVQ0THhHcWZzZVZSbVprOG96WTlSKzhLRmtzMkEybG1HNFVmUERtRlVWSUVNYmV3SjhHN09rTFRPajVEQWV0b01wVEh1RE04SkdpNVpXaHV2bGh5L2w5NU5XUFBidE8rZ0tTMTVQTml1UGNORExMdGNSQ2NIbUg2TUZiVWUyTC9oSm5VS2NxUVNYMmhqcnJzdXhPVXkvNFZ4Q3BDQUJqQ244U2Z4c3J3Y1JLaU09IHJvb3RAZXhhbXBsZS5jb20="
+            }
+          ],
+          "uid": [
+            "johnny.bravo"
+          ]
+        }
+      ],
+      "summary": "2 users matched"
+    },
+    "version": "4.6.8",
+    "error": null,
+    "id": null,
+    "principal": "admin@EXAMPLE.COM"
+  }
