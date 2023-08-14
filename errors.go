@@ -140,7 +140,7 @@ const (
 	rejectionReasonHTTPHeader                = "X-Ipa-Rejection-Reason"
 )
 
-// unauthorizedHTTPError: Add information from the rejection reason header to unauthorized error.
+// Add information from the rejection reason header to unauthorized error.
 func unauthorizedHTTPError(resp *http.Response) error {
 	var errorCode int
 	rejectionReason := resp.Header.Get(rejectionReasonHTTPHeader)

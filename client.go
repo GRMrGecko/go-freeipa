@@ -13,7 +13,7 @@ import (
 	"github.com/jcmturner/gokrb5/v8/spnego"
 )
 
-// Client: The base object for connections to FreeIPA API.
+// The base object for connections to FreeIPA API.
 type Client struct {
 	uriBase  string
 	client   *http.Client
@@ -22,7 +22,7 @@ type Client struct {
 	krb5     *krb5client.Client
 }
 
-// init: Common init code for each connection type, mainly sets http.Client and uriBase.
+// Internal function with common init code for each connection type, mainly sets http.Client and uriBase.
 func (c *Client) init(host string, transport *http.Transport) error {
 	// Create a cookie jar to store FreeIPA session cookies.
 	jar, err := cookiejar.New(&cookiejar.Options{})
@@ -44,7 +44,7 @@ func (c *Client) init(host string, transport *http.Transport) error {
 	return nil
 }
 
-// Connect: Make a new client using standard username/password login.
+// Make a new client and login using standard username/password.
 func Connect(host string, transport *http.Transport, user, password string) (*Client, error) {
 	// Make the client config and save credentials.
 	client := &Client{
@@ -67,7 +67,7 @@ func Connect(host string, transport *http.Transport, user, password string) (*Cl
 	return client, nil
 }
 
-// login: Login using standard credentials.
+// Login using standard credentials.
 func (c *Client) login() error {
 	// If login is called, but kerberos client is configured, use kerberos login instead.
 	// This allows standard re-authentication calls to work with both kerbeos and standard authenciation.
@@ -98,7 +98,7 @@ func (c *Client) login() error {
 	return nil
 }
 
-// KerberosConnectOptions: Options for connecting to Kerberos.
+// Options for connecting to Kerberos.
 type KerberosConnectOptions struct {
 	Krb5ConfigReader io.Reader
 	KeytabReader     io.Reader
@@ -106,7 +106,7 @@ type KerberosConnectOptions struct {
 	Realm            string
 }
 
-// ConnectWithKerberos: Create a new client using Kerberos authentication.
+// Create a new client using Kerberos authentication.
 func ConnectWithKerberos(host string, transport *http.Transport, options *KerberosConnectOptions) (*Client, error) {
 	// Read the kerberos configuration file for server connection information.
 	krb5Config, err := krb5config.NewFromReader(options.Krb5ConfigReader)
@@ -150,7 +150,7 @@ func ConnectWithKerberos(host string, transport *http.Transport, options *Kerber
 	return client, nil
 }
 
-// loginWithKerberos: Authenticate using kerberos client.
+// Login using kerberos client. The regular login function will call this function if needed.
 func (c *Client) loginWithKerberos() error {
 	// Wrapper for authenticating with Kerberos credentials.
 	spnegoCl := spnego.NewClient(c.krb5, c.client, "")

@@ -12,7 +12,7 @@ import (
 // https://github.com/freeipa/freeipa/blob/ipa-4-7/ipalib/constants.py#L271
 const LDAPGeneralizedTimeFormat = "20060102150405Z"
 
-// Message: Used in providing extra messages and error response.
+// Used in providing extra messages and error response.
 type Message struct {
 	Type    string `json:"type"`
 	Message string `json:"message"`
@@ -20,12 +20,12 @@ type Message struct {
 	Name    string `json:"name"`
 }
 
-// string: Convert the message into a combind string.
+// Convert the message into a combind string.
 func (t *Message) string() string {
 	return fmt.Sprintf("%v (%v): %v", t.Name, t.Code, t.Message)
 }
 
-// Result: Standard result in response from FreeIPA.
+// Standard result in response from FreeIPA.
 type Result struct {
 	Count     int        `json:"count"`
 	Truncated bool       `json:"truncated"`
@@ -38,7 +38,7 @@ type Result struct {
 	Value   string      `json:"value,omitempty"`
 }
 
-// Response: Standard response from FreeIPA.
+// Standard response from FreeIPA.
 type Response struct {
 	Error     *Message `json:"error"`
 	Result    *Result  `json:"result"`
@@ -46,7 +46,7 @@ type Response struct {
 	Principal string   `json:"principal"`
 }
 
-// ParseResponse: Parse response from reader.
+// Parse response from reader.
 func ParseResponse(body io.Reader) (*Response, error) {
 	// Decode JSON response.
 	res := new(Response)
@@ -66,7 +66,7 @@ func ParseResponse(body io.Reader) (*Response, error) {
 	return res, nil
 }
 
-// BoolResult: Decode results which are boolean formatted, usually used to indicate success or state.
+// Decode results which are boolean formatted, usually used to indicate success or state.
 func (r *Response) BoolResult() bool {
 	if r.Result == nil {
 		return false
@@ -78,6 +78,7 @@ func (r *Response) BoolResult() bool {
 	return v
 }
 
+// Count the number of results that this request has.
 func (r *Response) CountResults() int {
 	if r.Result == nil {
 		return -1
@@ -89,8 +90,8 @@ func (r *Response) CountResults() int {
 	return len(a)
 }
 
-// GetAtIndex: Get an interface for a key.
-func (r *Response) GetAtIndex(index int, key string) ([]interface{}, bool) {
+// Return dictionary at index.
+func (r *Response) DictAtIndex(index int) (map[string]interface{}, bool) {
 	if r.Result == nil {
 		return nil, false
 	}
@@ -104,27 +105,21 @@ func (r *Response) GetAtIndex(index int, key string) ([]interface{}, bool) {
 	}
 	d := a[index]
 	dict, ok := d.(map[string]interface{})
-	if !ok {
-		return nil, false
-	}
-	v, ok := dict[key]
-	if !ok {
-		return nil, false
-	}
-	a, ok = v.([]interface{})
-	if !ok {
-		// Apparently FreeIPA sometimes returns a string outside of an array, so this catches that.
-		return []interface{}{v}, true
-	}
-	return a, true
+	return dict, ok
 }
 
-// Get: Get an interface for a key.
-func (r *Response) Get(key string) ([]interface{}, bool) {
+// Return dictionary.
+func (r *Response) Dict() (map[string]interface{}, bool) {
 	if r.Result == nil {
 		return nil, false
 	}
 	dict, ok := r.Result.Result.(map[string]interface{})
+	return dict, ok
+}
+
+// Get an interface for a key.
+func (r *Response) GetAtIndex(index int, key string) ([]interface{}, bool) {
+	dict, ok := r.DictAtIndex(index)
 	if !ok {
 		return nil, false
 	}
@@ -140,8 +135,52 @@ func (r *Response) Get(key string) ([]interface{}, bool) {
 	return a, true
 }
 
-// GetBoolProcess: Process bool element.
-func (r *Response) GetBoolProcess(v interface{}) (bool, bool) {
+// Get an interface for a key.
+func (r *Response) Get(key string) ([]interface{}, bool) {
+	dict, ok := r.Dict()
+	if !ok {
+		return nil, false
+	}
+	v, ok := dict[key]
+	if !ok {
+		return nil, false
+	}
+	a, ok := v.([]interface{})
+	if !ok {
+		// Apparently FreeIPA sometimes returns a string outside of an array, so this catches that.
+		return []interface{}{v}, true
+	}
+	return a, true
+}
+
+// Get all keys at index.
+func (r *Response) KeysAtIndex(index int) ([]string, bool) {
+	var res []string
+	dict, ok := r.DictAtIndex(index)
+	if !ok {
+		return res, false
+	}
+	for k := range dict {
+		res = append(res, k)
+	}
+	return res, true
+}
+
+// Get all keys.
+func (r *Response) Keys() ([]string, bool) {
+	var res []string
+	dict, ok := r.Dict()
+	if !ok {
+		return res, false
+	}
+	for k := range dict {
+		res = append(res, k)
+	}
+	return res, true
+}
+
+// Process sub element with bool.
+func (r *Response) processBool(v interface{}) (bool, bool) {
 	a, ok := v.(bool)
 	if !ok {
 		return false, false
@@ -149,26 +188,26 @@ func (r *Response) GetBoolProcess(v interface{}) (bool, bool) {
 	return a, true
 }
 
-// GetBoolAtIndex: Get a boolean from a key at an index.
+// Get a boolean from a key at an index.
 func (r *Response) GetBoolAtIndex(index int, key string) (bool, bool) {
 	v, ok := r.GetAtIndex(index, key)
 	if !ok || len(v) < 1 {
 		return false, false
 	}
-	return r.GetBoolProcess(v[0])
+	return r.processBool(v[0])
 }
 
-// GetBool: Get a boolean from a key.
+// Get a boolean from a key.
 func (r *Response) GetBool(key string) (bool, bool) {
 	v, ok := r.Get(key)
 	if !ok || len(v) < 1 {
 		return false, false
 	}
-	return r.GetBoolProcess(v[0])
+	return r.processBool(v[0])
 }
 
-// GetStringProcess: Process sub element with string.
-func (r *Response) GetStringProcess(v []interface{}) ([]string, bool) {
+// Process sub element with string.
+func (r *Response) processString(v []interface{}) ([]string, bool) {
 	var res []string
 	for _, p := range v {
 		s, ok := p.(string)
@@ -180,25 +219,25 @@ func (r *Response) GetStringProcess(v []interface{}) ([]string, bool) {
 	return res, true
 }
 
-// GetStringsAtIndex: Get string value for key at an index.
+// Get string value for key at an index.
 func (r *Response) GetStringsAtIndex(index int, key string) ([]string, bool) {
 	v, ok := r.GetAtIndex(index, key)
 	if !ok {
 		return []string{}, false
 	}
-	return r.GetStringProcess(v)
+	return r.processString(v)
 }
 
-// GetStrings: Get string value for key.
+// Get string value for key.
 func (r *Response) GetStrings(key string) ([]string, bool) {
 	v, ok := r.Get(key)
 	if !ok {
 		return []string{}, false
 	}
-	return r.GetStringProcess(v)
+	return r.processString(v)
 }
 
-// GetStringAtIndex: Get string value for key at an index.
+// Get string value for key at an index.
 func (r *Response) GetStringAtIndex(index int, key string) (string, bool) {
 	v, ok := r.GetStringsAtIndex(index, key)
 	if !ok || len(v) < 1 {
@@ -207,7 +246,7 @@ func (r *Response) GetStringAtIndex(index int, key string) (string, bool) {
 	return v[0], true
 }
 
-// GetString: Get string value for key.
+// Get string value for key.
 func (r *Response) GetString(key string) (string, bool) {
 	v, ok := r.GetStrings(key)
 	if !ok || len(v) < 1 {
@@ -216,8 +255,8 @@ func (r *Response) GetString(key string) (string, bool) {
 	return v[0], true
 }
 
-// GetDataProcess: Process a sub element with bytes.
-func (r *Response) GetDataProcess(v []interface{}) ([][]byte, bool) {
+// Process sub element with bytes.
+func (r *Response) processData(v []interface{}) ([][]byte, bool) {
 	var res [][]byte
 	for _, p := range v {
 		var bytes []byte
@@ -242,25 +281,25 @@ func (r *Response) GetDataProcess(v []interface{}) ([][]byte, bool) {
 	return res, true
 }
 
-// GetDatasAtIndex: Get byte array for key at an index.
+// Get byte array for key at an index.
 func (r *Response) GetDatasAtIndex(index int, key string) ([][]byte, bool) {
 	v, ok := r.GetAtIndex(index, key)
 	if !ok {
 		return [][]byte{}, false
 	}
-	return r.GetDataProcess(v)
+	return r.processData(v)
 }
 
-// GetDatas: Get byte array for key.
+// Get byte array for key.
 func (r *Response) GetDatas(key string) ([][]byte, bool) {
 	v, ok := r.Get(key)
 	if !ok {
 		return [][]byte{}, false
 	}
-	return r.GetDataProcess(v)
+	return r.processData(v)
 }
 
-// GetDataAtIndex: Get byte array for key at an index.
+// Get byte array for key at an index.
 func (r *Response) GetDataAtIndex(index int, key string) ([]byte, bool) {
 	v, ok := r.GetDatasAtIndex(index, key)
 	if !ok || len(v) < 1 {
@@ -269,7 +308,7 @@ func (r *Response) GetDataAtIndex(index int, key string) ([]byte, bool) {
 	return v[0], true
 }
 
-// GetData: Get byte array for key.
+// Get byte array for key.
 func (r *Response) GetData(key string) ([]byte, bool) {
 	v, ok := r.GetDatas(key)
 	if !ok || len(v) < 1 {
@@ -278,8 +317,8 @@ func (r *Response) GetData(key string) ([]byte, bool) {
 	return v[0], true
 }
 
-// GetDateTimeProcess: Process a sub element with a date/time value.
-func (r *Response) GetDateTimeProcess(v []interface{}) ([]time.Time, bool) {
+// Process sub element with a date/time value.
+func (r *Response) processDateTime(v []interface{}) ([]time.Time, bool) {
 	var res []time.Time
 	for _, p := range v {
 		dict, ok := p.(map[string]interface{})
@@ -303,25 +342,25 @@ func (r *Response) GetDateTimeProcess(v []interface{}) ([]time.Time, bool) {
 	return res, true
 }
 
-// GetDateTimesAtIndex: Get date time value for key at an index.
+// Get date time value for key at an index.
 func (r *Response) GetDateTimesAtIndex(index int, key string) ([]time.Time, bool) {
 	v, ok := r.GetAtIndex(index, key)
 	if !ok {
 		return []time.Time{}, false
 	}
-	return r.GetDateTimeProcess(v)
+	return r.processDateTime(v)
 }
 
-// GetDateTimes: Get date time value for key.
+// Get date time value for key.
 func (r *Response) GetDateTimes(key string) ([]time.Time, bool) {
 	v, ok := r.Get(key)
 	if !ok {
 		return []time.Time{}, false
 	}
-	return r.GetDateTimeProcess(v)
+	return r.processDateTime(v)
 }
 
-// GetDateTimeAtIndex: Get date time value for key at an index.
+// Get date time value for key at an index.
 func (r *Response) GetDateTimeAtIndex(index int, key string) (time.Time, bool) {
 	v, ok := r.GetDateTimesAtIndex(index, key)
 	if !ok || len(v) < 1 {
@@ -330,7 +369,7 @@ func (r *Response) GetDateTimeAtIndex(index int, key string) (time.Time, bool) {
 	return v[0], true
 }
 
-// GetDateTime: Get date time value for key.
+// Get date time value for key.
 func (r *Response) GetDateTime(key string) (time.Time, bool) {
 	v, ok := r.GetDateTimes(key)
 	if !ok || len(v) < 1 {

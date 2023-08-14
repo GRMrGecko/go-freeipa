@@ -15,7 +15,7 @@ import (
 // Unused port for testing.
 const httpsPort = 8831
 
-// handleLogin: Test login handler.
+// Test login handler.
 func handleLogin(w http.ResponseWriter, req *http.Request) {
 	// Logins are form data posts.
 	req.ParseForm()
@@ -53,7 +53,7 @@ func handleLogin(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// sendInvalidJSON: General invalid json error response for testing error handling.
+// General invalid json error response for testing error handling.
 func sendInvalidJSON(w http.ResponseWriter) {
 	f, err := os.Open("test/invalid_json.json")
 	if err != nil {
@@ -63,7 +63,7 @@ func sendInvalidJSON(w http.ResponseWriter) {
 	io.Copy(w, f)
 }
 
-// handleJSON: Handle the json session test request.
+// Handle the json session test request.
 func handleJSON(w http.ResponseWriter, req *http.Request) {
 	// If session cookie doesn't exist, something is wrong. Send unauthenticated response.
 	cookie, err := req.Cookie("ipa_session")
@@ -107,7 +107,7 @@ func handleJSON(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// TestLogin: General library tests with test server.
+// General library tests with test server.
 func TestLogin(t *testing.T) {
 	// Spin up test server using port specified above.
 	srvAddr := fmt.Sprintf("127.0.0.1:%d", httpsPort)

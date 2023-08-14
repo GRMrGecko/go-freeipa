@@ -16,7 +16,7 @@ type Request struct {
 	Params []interface{} `json:"params"`
 }
 
-// NewRequest: Create a new request providing method, args, and parameters.
+// Create a new API request.
 func NewRequest(method string, args []interface{}, parms map[string]interface{}) *Request {
 	// Add API version to the parameters.
 	parms["version"] = apiVersion
@@ -34,7 +34,7 @@ func NewRequest(method string, args []interface{}, parms map[string]interface{})
 	return req
 }
 
-// Do: Have the client do the request.
+// Have the client perform the request.
 func (c *Client) Do(req *Request) (*Response, error) {
 	// Send request.
 	res, err := c.sendRequest(req)
@@ -67,7 +67,7 @@ func (c *Client) Do(req *Request) (*Response, error) {
 	return ParseResponse(res.Body)
 }
 
-// sendRequest: Encode and send the request to the session.
+// Encode and send the request to the session.
 func (c *Client) sendRequest(request *Request) (*http.Response, error) {
 	// Encode to JSON.
 	data, err := json.Marshal(request)
