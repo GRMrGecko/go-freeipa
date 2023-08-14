@@ -12,7 +12,7 @@ import (
     "crypto/tls"
     "log"
     "net/http"
-    freeipa "github.com/grmrgecko/go-freeipa"
+    "github.com/grmrgecko/go-freeipa"
 )
 
 func main() {
